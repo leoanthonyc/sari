@@ -9,5 +9,11 @@ module Types
     def test_field
       "Hello World!"
     end
+
+    field :entries, [EntryType], null: true,
+      description: "Array of user entries"
+    def entries()
+      context[:current_user].entries
+    end
   end
 end
