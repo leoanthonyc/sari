@@ -1,20 +1,20 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as PropTypes from "prop-types";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { ApolloProvider } from '@apollo/client';
+import Entries from '../components/Entries';
+import setupApolloClient from '../utils/setupApolloClient';
 
-const Hello = (props) => <div>Hello {props.name}!</div>;
+const client = setupApolloClient();
 
-Hello.defaultProps = {
-  name: "David",
-};
+const App = () => (
+  <ApolloProvider client={client}>
+    <Entries />
+  </ApolloProvider>
+);
 
-Hello.propTypes = {
-  name: PropTypes.string,
-};
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <Hello name="React & TypeScript" />,
-    document.body.appendChild(document.createElement("div"))
+    <App />,
+    document.body.appendChild(document.createElement('div'))
   );
 });
