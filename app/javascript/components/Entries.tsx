@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useQuery, gql } from '@apollo/client';
+import Entry from './Entry';
+import NewEntry from './NewEntry';
 
 const ENTRIES = gql`
   query Entries {
@@ -26,12 +28,15 @@ const Entries = (): JSX.Element => {
   return (
     <div className="entries">
       <h1>Entries</h1>
+      <NewEntry />
+      <h2>Entries</h2>
       {entries.map(({ id, name, value }: Entry) => (
         <div key={id}>
-          {name}: {value}
+          <Entry id={id} name={name} value={value} />
         </div>
       ))}
     </div>
   );
 };
+
 export default Entries;

@@ -4,17 +4,16 @@ module Mutations
 
     argument :id, ID, required: false
     argument :name, String, required: true
-    argument :value, Integer, required: true
+    argument :value, String, required: true
 
     field :entry, Types::EntryType, null: true
     field :errors, [String], null: false
 
     def resolve(id: nil, name:, value:)
       user = context[:current_user]
-      if id 
-        entry = Entry.find(id)
-        entry.name = name
-        entry.value = value
+      if id
+        entry = user.entries.find(id)
+        entry.update(name: name, value: value)
       else
         entry = user.entries.build(name: name, value: value)
       end
