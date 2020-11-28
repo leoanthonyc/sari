@@ -2,15 +2,22 @@ module Mutations
   class SaveEntry < Mutations::BaseMutation
     null true
 
+    argument :id, ID, required: false
     argument :name, String, required: true
     argument :value, Integer, required: true
 
     field :entry, Types::EntryType, null: true
     field :errors, [String], null: false
 
-    def resolve(name:, value:)
+    def resolve(id: nil, name:, value:)
       user = context[:current_user]
-      entry = user.entries.build(name: name, value: value)
+      if id 
+        entry = Entry.find(id)
+        entry.name = name
+        entry.value = value
+      else
+        entry = user.entries.build(name: name, value: value)
+      end
       if entry.save
         # Successful creation, return the created object with no errors
         {
