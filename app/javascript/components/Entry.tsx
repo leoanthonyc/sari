@@ -13,10 +13,20 @@ const SAVE_ENTRY = gql`
   }
 `;
 
+const DELETE_ENTRY = gql`
+  mutation DeleteEntry($id: ID) {
+    deleteEntry(input: { id: $id }) {
+      success
+      errors
+    }
+  }
+`;
+
 type EntryType = {
   id: number;
   name: string;
   value: string;
+  __ref?: string;
 };
 
 const Entry = ({ id, name, value }: EntryType): JSX.Element => {
@@ -24,16 +34,40 @@ const Entry = ({ id, name, value }: EntryType): JSX.Element => {
   const [entryValue, setEntryValue] = useState(value);
   const [isEditing, setIsEditing] = useState(false);
   const [saveEntry, { loading, error }] = useMutation(SAVE_ENTRY);
+  const [
+    deleteEntry,
+    { loading: loadingDelete, error: errorDelete },
+  ] = useMutation(DELETE_ENTRY, {
+    update(cache) {
+      cache.modify({
+        fields: {
+          entries(existingEntries = []) {
+            const deletedEntry = `Entry:${id}`;
+            return existingEntries.filter(
+              (e: EntryType) => e.__ref !== deletedEntry
+            );
+          },
+        },
+      });
+    },
+  });
 
   const handleSave = (): void => {
     saveEntry({ variables: { id, name: entryName, value: entryValue } });
     setIsEditing(false);
   };
 
+  const handleDelete = (): void => {
+    if (confirm('Are you sure?')) {
+      deleteEntry({ variables: { id } });
+      setIsEditing(false);
+    }
+  };
+
   return (
     <div>
-      {loading && <p>Loading</p>}
-      {error && <p>Error</p>}
+      {(loading || loadingDelete) && <p>Loading</p>}
+      {(error || errorDelete) && <p>Error</p>}
       Name:
       <input
         disabled={!isEditing}
@@ -58,9 +92,14 @@ const Entry = ({ id, name, value }: EntryType): JSX.Element => {
           </button>
         </>
       ) : (
-        <button type="button" onClick={() => setIsEditing(true)}>
-          Edit
-        </button>
+        <>
+          <button type="button" onClick={() => setIsEditing(true)}>
+            Edit
+          </button>
+          <button type="button" onClick={() => handleDelete()}>
+            Delete
+          </button>
+        </>
       )}
     </div>
   );
