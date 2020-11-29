@@ -9,7 +9,7 @@ module Types
     field :tags, [String], null: true
 
     def tags
-      object.tags.split(',')
+      object.tags&.split(',') || []
     end
   end
 end

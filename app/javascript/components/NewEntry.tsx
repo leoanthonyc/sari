@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
+import TagsInput from 'react-tagsinput';
 
 const SAVE_ENTRY = gql`
   mutation SaveEntry($id: ID, $name: String!, $value: String!) {
@@ -16,6 +17,7 @@ const SAVE_ENTRY = gql`
 const NewEntry = (): JSX.Element => {
   const [name, setName] = useState('');
   const [value, setValue] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [saveEntry, { loading, error }] = useMutation(SAVE_ENTRY, {
     update(
       cache,
@@ -68,6 +70,7 @@ const NewEntry = (): JSX.Element => {
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
+      <TagsInput value={tags} onChange={(tags: string[]) => setTags(tags)} />
       <button type="button" onClick={handleSubmit}>
         Save
       </button>

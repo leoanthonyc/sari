@@ -8,17 +8,17 @@ module Mutations
     argument :id, ID, required: false
     argument :name, String, required: true
     argument :value, String, required: true
-    argument :tags, String, required: false
+    argument :tags, [String], required: false
 
     field :entry, Types::EntryType, null: true
 
-    def resolve(id: nil, name:, value:, tags: '')
+    def resolve(id: nil, name:, value:, tags: [])
       user = context[:current_user]
       if id
         entry = user.entries.find(id)
-        entry.update(name: name, value: value, tags: tags)
+        entry.update(name: name, value: value, tags: tags.join(','))
       else
-        entry = user.entries.build(name: name, value: value, tags: tags)
+        entry = user.entries.build(name: name, value: value, tags: tags.join(','))
       end
       { entry: entry.save ? entry : nil }
     end

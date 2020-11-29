@@ -9,6 +9,7 @@ const ENTRIES = gql`
       id
       name
       value
+      tags
     }
   }
 `;
@@ -16,7 +17,8 @@ const ENTRIES = gql`
 interface Entry {
   id: number;
   name: string;
-  value: number;
+  value: string;
+  tags: string[];
 }
 
 const Entries = (): JSX.Element => {
@@ -30,9 +32,9 @@ const Entries = (): JSX.Element => {
       <h1>Entries</h1>
       <NewEntry />
       <h2>Entries</h2>
-      {entries.map(({ id, name, value }: Entry) => (
+      {entries.map(({ id, name, value, tags }: Entry) => (
         <div key={id}>
-          <Entry id={id} name={name} value={value} />
+          <Entry id={id} name={name} value={value} tags={tags} />
         </div>
       ))}
     </div>

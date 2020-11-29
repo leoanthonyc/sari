@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
+import TagsInput from 'react-tagsinput';
 
 const SAVE_ENTRY = gql`
-  mutation SaveEntry($id: ID, $name: String!, $value: String!) {
-    saveEntry(input: { id: $id, name: $name, value: $value }) {
+  mutation SaveEntry(
+    $id: ID
+    $name: String!
+    $value: String!
+    $tags: [String]
+  ) {
+    saveEntry(input: { id: $id, name: $name, value: $value, tags: $tags }) {
       entry {
         id
         name
         value
+        tags
       }
     }
   }
@@ -26,12 +33,14 @@ type EntryType = {
   id: number;
   name: string;
   value: string;
+  tags: string[];
   __ref?: string;
 };
 
-const Entry = ({ id, name, value }: EntryType): JSX.Element => {
+const Entry = ({ id, name, value, tags = [] }: EntryType): JSX.Element => {
   const [entryName, setEntryName] = useState(name);
   const [entryValue, setEntryValue] = useState(value);
+  const [entryTags, setEntryTags] = useState<string[]>(tags);
   const [isEditing, setIsEditing] = useState(false);
   const [saveEntry, { loading, error }] = useMutation(SAVE_ENTRY);
   const [
@@ -53,7 +62,9 @@ const Entry = ({ id, name, value }: EntryType): JSX.Element => {
   });
 
   const handleSave = (): void => {
-    saveEntry({ variables: { id, name: entryName, value: entryValue } });
+    saveEntry({
+      variables: { id, name: entryName, value: entryValue, tags: entryTags },
+    });
     setIsEditing(false);
   };
 
@@ -81,6 +92,11 @@ const Entry = ({ id, name, value }: EntryType): JSX.Element => {
         type="text"
         value={entryValue}
         onChange={(e) => setEntryValue(e.target.value)}
+      />
+      <TagsInput
+        disabled={!isEditing}
+        value={entryTags}
+        onChange={(tags: string[]) => setEntryTags(tags)}
       />
       {isEditing ? (
         <>
