@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module Mutations
+  # This class handles the creation/update of entries via graphql mutation
   class SaveEntry < Mutations::BaseMutation
     null true
 
@@ -8,7 +11,6 @@ module Mutations
     argument :tags, String, required: false
 
     field :entry, Types::EntryType, null: true
-    field :errors, [String], null: false
 
     def resolve(id: nil, name:, value:, tags: '')
       user = context[:current_user]
@@ -18,19 +20,7 @@ module Mutations
       else
         entry = user.entries.build(name: name, value: value, tags: tags)
       end
-      if entry.save
-        # Successful creation, return the created object with no errors
-        {
-          entry: entry,
-          errors: [],
-        }
-      else
-        # Failed save, return the errors to the client
-        {
-          entry: nil,
-          errors: entry.errors.full_messages
-        }
-      end
+      { entry: entry.save ? entry : nil }
     end
   end
 end
