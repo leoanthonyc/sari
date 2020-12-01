@@ -85,6 +85,7 @@ const Entry = ({ id, name, value, tags = [] }: EntryType): JSX.Element => {
         type="text"
         value={entryName}
         onChange={(e) => setEntryName(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleSave()}
       />
       Value:
       <input
@@ -92,6 +93,7 @@ const Entry = ({ id, name, value, tags = [] }: EntryType): JSX.Element => {
         type="text"
         value={entryValue}
         onChange={(e) => setEntryValue(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleSave()}
       />
       <TagsInput
         disabled={!isEditing}
